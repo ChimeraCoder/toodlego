@@ -25,3 +25,26 @@ func TestAccountInfo(t *testing.T) {
 		return
 	}
 }
+
+func TestTasks(t *testing.T) {
+	taskResponse, err := client.Tasks()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if taskResponse == nil {
+		t.Errorf("Nil account received without error")
+		return
+	}
+
+	if reflect.DeepEqual(*taskResponse, TaskResponse{}) {
+		t.Errorf("Empty response received for Tasks")
+		return
+	}
+
+	if len(taskResponse.Tasks) == 0 {
+		t.Errorf("Received empty list of tasks")
+		return
+	}
+}
