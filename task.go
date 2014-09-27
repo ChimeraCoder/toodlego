@@ -18,4 +18,8 @@ type Task struct {
 	Priority  int    `json:"priority"`
 	Star      int    `json:"star"`
 	Title     string `json:"title"`
+
+	// Optional fields
+	DueDate int64 `json:"duedate"`
+	DueTime int64 `json:"duetime"`
 }

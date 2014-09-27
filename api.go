@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"strings"
 )
 
 const BASE_URL = "https://api.toodledo.com/3"
@@ -38,10 +39,11 @@ func (c *ToodleClient) AccountInfo() (*Account, error) {
 	return &account, err
 }
 
-func (c *ToodleClient) Tasks() (*TaskResponse, error) {
+func (c *ToodleClient) Tasks(fields ...string) (*TaskResponse, error) {
 	v := url.Values{}
 	v.Set("access_token", c.AccessToken)
 	v.Set("f", "json")
+	v.Set("fields", strings.Join(fields, ","))
 
 	resp, err := http.Get(BASE_URL + "/tasks/get.php" + "?" + v.Encode())
 

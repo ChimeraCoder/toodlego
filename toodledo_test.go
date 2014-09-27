@@ -27,7 +27,7 @@ func TestAccountInfo(t *testing.T) {
 }
 
 func TestTasks(t *testing.T) {
-	taskResponse, err := client.Tasks()
+	taskResponse, err := client.Tasks("duedate", "duetime")
 	if err != nil {
 		t.Error(err)
 		return
