@@ -26,6 +26,7 @@ type Task struct {
 	// Optional fields
 
 	// Date and time are ToodleTimes and should not be used directly
+	// Use Due() and Start() instead
 	DueDate   ToodleTime `json:"duedate"`
 	DueTime   ToodleTime `json:"duetime"`
 	StartDate ToodleTime `json:"startdate"`
@@ -44,6 +45,10 @@ func (t Task) Start() *time.Time {
 	return parseToodleDateTime(t.StartDate, t.StartTime)
 }
 
+// ImplicitStart finds the start time for the task implied by the combination of
+// the due time and the length of the task
+// If either the length or the due time is not specified, ImplicitStart defaults to
+// the explicit start time specified
 func (t Task) ImplicitStart() *time.Time {
 	// Default to using the time implied by the due time and length
 	if t.Length != 0 && t.Due() != nil {
@@ -53,8 +58,9 @@ func (t Task) ImplicitStart() *time.Time {
 	return t.Start()
 }
 
+// IsChild is a convenience function that returns true if the task has a parent task
 func (t Task) IsChild() bool {
-	return t.Parent == 0
+	return t.Parent != 0
 }
 
 func parseToodleDateTime(tdate, ttime ToodleTime) *time.Time {
