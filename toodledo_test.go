@@ -31,7 +31,7 @@ func TestAccountInfo(t *testing.T) {
 }
 
 func TestTasks(t *testing.T) {
-	taskResponse, err := client.Tasks("duedate", "duetime", "startdate", "starttime", "length", "tags", "parent")
+	taskResponse, err := client.Tasks(nil, nil, Uncompleted, 0, 0, "duedate", "duetime", "startdate", "starttime", "length", "tags", "parent")
 	if err != nil {
 		t.Error(err)
 		return

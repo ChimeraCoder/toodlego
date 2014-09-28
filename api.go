@@ -8,7 +8,9 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 )
 
 const BASE_URL = "https://api.toodledo.com/3"
@@ -27,6 +29,14 @@ type RefreshResponse struct {
 	Scope        string  `json:"scope"`
 	TokenType    string  `json:"token_type"`
 }
+
+type ToodleCompleted int
+
+const (
+	CompletedOrNot ToodleCompleted = iota
+	Uncompleted
+	Completed
+)
 
 func (c *ToodleClient) AccountInfo() (*Account, error) {
 	v := url.Values{}
@@ -49,12 +59,36 @@ func (c *ToodleClient) AccountInfo() (*Account, error) {
 	return &account, err
 }
 
-func (c *ToodleClient) Tasks(fields ...string) (*TaskResponse, error) {
+func (c *ToodleClient) Tasks(modifiedBefore *time.Time, modifiedAfter *time.Time, completed ToodleCompleted, id int64, start int, fields ...string) (*TaskResponse, error) {
 	v := url.Values{}
 	v.Set("access_token", c.AccessToken)
+	if modifiedBefore != nil {
+		v.Set("before", strconv.FormatInt(modifiedBefore.Unix(), 10))
+	}
+	if modifiedAfter != nil {
+		v.Set("after", strconv.FormatInt(modifiedAfter.Unix(), 10))
+	}
+
+	if completed != CompletedOrNot {
+		// Toodledo uses -1, 0, and 1 instead of 0, 1, 2
+		// so we need to subtract 1
+		v.Set("comp", strconv.Itoa(int(completed)-1))
+	}
+
+	if id != 0 {
+		v.Set("id", strconv.FormatInt(id, 10))
+	}
+
+	if start != 0 {
+		v.Set("start", strconv.Itoa(start))
+	}
+
 	v.Set("f", "json")
+
 	v.Set("fields", strings.Join(fields, ","))
 
+	log.Println(v.Encode())
+	<-time.After(5 * time.Second)
 	resp, err := http.Get(BASE_URL + "/tasks/get.php" + "?" + v.Encode())
 
 	if err != nil {
