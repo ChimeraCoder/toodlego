@@ -6,7 +6,10 @@ import (
 	"testing"
 )
 
-var client = ToodleClient{os.Getenv("TOODLE_ACCESS_TOKEN")}
+var client = ToodleClient{AppId: os.Getenv("TOODLE_APP_ID"),
+	ClientSecret: os.Getenv("TOODLE_CLIENT_SECRET"),
+	AccessToken:  os.Getenv("TOODLE_ACCESS_TOKEN"),
+	RefreshToken: os.Getenv("TOODLE_REFRESH_TOKEN")}
 
 func TestAccountInfo(t *testing.T) {
 	account, err := client.AccountInfo()
@@ -45,6 +48,22 @@ func TestTasks(t *testing.T) {
 
 	if len(taskResponse.Tasks) == 0 {
 		t.Errorf("Received empty list of tasks")
+		return
+	}
+}
+
+func TestRefresh(t *testing.T) {
+	refreshResponse, err := client.RefreshCredentials()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if refreshResponse == nil {
+		t.Errorf("Received nil response from RefreshCredentials")
+		return
+	}
+	if reflect.DeepEqual(*refreshResponse, &RefreshResponse{}) {
+		t.Errorf("Received empty RefreshResponse")
 		return
 	}
 }

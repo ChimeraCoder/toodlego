@@ -15,7 +15,18 @@ import (
 const BASE_URL = "https://api.toodledo.com/3"
 
 type ToodleClient struct {
-	AccessToken string
+	AppId        string
+	ClientSecret string
+	AccessToken  string
+	RefreshToken string
+}
+
+type RefreshResponse struct {
+	AccessToken  string  `json:"access_token"`
+	ExpiresIn    float64 `json:"expires_in"`
+	RefreshToken string  `json:"refresh_token"`
+	Scope        string  `json:"scope"`
+	TokenType    string  `json:"token_type"`
 }
 
 func (c *ToodleClient) AccountInfo() (*Account, error) {
@@ -96,4 +107,38 @@ func (c *ToodleClient) Tasks(fields ...string) (*TaskResponse, error) {
 	}
 
 	return taskResponse, err
+}
+
+func (c *ToodleClient) RefreshCredentials() (*RefreshResponse, error) {
+	v := url.Values{}
+	v.Set("grant_type", "refresh_token")
+	v.Set("refresh_token", c.RefreshToken)
+
+	req, err := http.NewRequest("POST", "https://api.toodledo.com/3/account/token.php", strings.NewReader(v.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.SetBasicAuth(c.AppId, c.ClientSecret)
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	httpClient := &http.Client{}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	bts, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("Response was: %s", string(bts))
+
+	result := &RefreshResponse{}
+
+	err = json.Unmarshal(bts, result)
+	if err != nil {
+		return nil, err
+	}
+	c.AccessToken = result.AccessToken
+	c.RefreshToken = result.RefreshToken
+	return result, nil
 }
