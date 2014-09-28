@@ -70,4 +70,5 @@ func TestRefresh(t *testing.T) {
 		t.Errorf("Received empty RefreshResponse")
 		return
 	}
+    log.Printf("Successfully refreshed credentials: %+v", refreshResponse)
 }
