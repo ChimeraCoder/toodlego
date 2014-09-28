@@ -44,6 +44,15 @@ func (t Task) Start() *time.Time {
 	return parseToodleDateTime(t.StartDate, t.StartTime)
 }
 
+func (t Task) ImplicitStart() *time.Time {
+	// Default to using the time implied by the due time and length
+	if t.Length != 0 && t.Due() != nil {
+		result := t.Due().Add(-1 * time.Duration(t.Length) * time.Minute)
+		return &result
+	}
+	return t.Start()
+}
+
 func parseToodleDateTime(tdate, ttime ToodleTime) *time.Time {
 	if tdate == 0 && ttime == 0 {
 		return nil
