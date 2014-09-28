@@ -1,6 +1,7 @@
 package toodledo
 
 import (
+	"log"
 	"os"
 	"reflect"
 	"testing"
@@ -30,7 +31,7 @@ func TestAccountInfo(t *testing.T) {
 }
 
 func TestTasks(t *testing.T) {
-	taskResponse, err := client.Tasks("duedate", "duetime")
+	taskResponse, err := client.Tasks("duedate", "duetime", "startdate", "starttime", "length", "tags", "parent")
 	if err != nil {
 		t.Error(err)
 		return
@@ -49,6 +50,12 @@ func TestTasks(t *testing.T) {
 	if len(taskResponse.Tasks) == 0 {
 		t.Errorf("Received empty list of tasks")
 		return
+	}
+	for _, task := range taskResponse.Tasks {
+		log.Printf("%+v", task)
+		if task.Due() != nil {
+			log.Printf("Due on: %s", task.Due().String())
+		}
 	}
 }
 

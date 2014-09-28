@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"reflect"
 	"strings"
 )
 
@@ -70,7 +69,6 @@ func (c *ToodleClient) Tasks(fields ...string) (*TaskResponse, error) {
 	d.UseNumber()
 	var results []interface{}
 	err = d.Decode(&results)
-	log.Print(string(bts))
 	if err != nil {
 		log.Print(results)
 		return nil, fmt.Errorf("Error decoding JSON response to /tasks/get.php: %s", err)
@@ -83,8 +81,6 @@ func (c *ToodleClient) Tasks(fields ...string) (*TaskResponse, error) {
 
 	meta, ok := results[0].(map[string]interface{})
 	if !ok {
-		log.Print(results[0])
-		log.Print(reflect.TypeOf(results[0]))
 		return nil, fmt.Errorf("First response from /tasks/get.php is not a TaskResponseMeta")
 	}
 	taskResponse.Meta.Num, _ = meta["num"].(json.Number).Int64()
