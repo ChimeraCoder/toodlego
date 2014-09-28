@@ -53,8 +53,8 @@ func (t Task) ImplicitStart() *time.Time {
 	return t.Start()
 }
 
-func (t Task) IsChild() bool{
-    return t.Parent == 0
+func (t Task) IsChild() bool {
+	return t.Parent == 0
 }
 
 func parseToodleDateTime(tdate, ttime ToodleTime) *time.Time {

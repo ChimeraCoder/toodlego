@@ -55,7 +55,6 @@ func (c *ToodleClient) AccountInfo() (*Account, error) {
 	}
 	var account Account
 	err = json.Unmarshal(bts, &account)
-	log.Print(string(bts))
 	return &account, err
 }
 
@@ -89,9 +88,11 @@ func (c *ToodleClient) Tasks(modifiedBefore *time.Time, modifiedAfter *time.Time
 
 	log.Println(v.Encode())
 	resp, err := http.Get(BASE_URL + "/tasks/get.php" + "?" + v.Encode())
-
 	if err != nil {
 		return nil, err
+	}
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("Received response %s", resp.Status)
 	}
 
 	bts, err := ioutil.ReadAll(resp.Body)
