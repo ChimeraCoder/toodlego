@@ -88,7 +88,6 @@ func (c *ToodleClient) Tasks(modifiedBefore *time.Time, modifiedAfter *time.Time
 	v.Set("fields", strings.Join(fields, ","))
 
 	log.Println(v.Encode())
-	<-time.After(5 * time.Second)
 	resp, err := http.Get(BASE_URL + "/tasks/get.php" + "?" + v.Encode())
 
 	if err != nil {

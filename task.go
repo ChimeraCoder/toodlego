@@ -32,7 +32,7 @@ type Task struct {
 	StartTime ToodleTime `json:"starttime"`
 
 	Length     int64  `json:"length"`
-	TagsString string `json:"tags"`
+	TagsString string `json:"tag"`
 	Parent     int64  `json:"parent"`
 }
 
