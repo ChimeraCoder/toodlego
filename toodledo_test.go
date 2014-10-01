@@ -72,3 +72,10 @@ func TestRefresh(t *testing.T) {
 	}
 	log.Printf("Successfully refreshed credentials: %+v", refreshResponse)
 }
+
+func TestSaveConfig(t *testing.T) {
+	err := client.SaveConfig()
+	if err != nil {
+		t.Error(err)
+	}
+}

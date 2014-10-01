@@ -8,12 +8,18 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Wessie/appdirs"
 )
 
 const BASE_URL = "https://api.toodledo.com/3"
+
+var app = appdirs.New("toodlego", "chimeracoder", "0.1")
 
 type ToodleClient struct {
 	AppId        string
@@ -171,4 +177,22 @@ func (c *ToodleClient) RefreshCredentials() (*RefreshResponse, error) {
 	c.AccessToken = result.AccessToken
 	c.RefreshToken = result.RefreshToken
 	return result, nil
+}
+
+func (c *ToodleClient) SaveConfig() error {
+	dir := app.UserConfig()
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		return err
+	}
+	filename := path.Join(dir, "config.json")
+	bts, err := json.Marshal(c)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(filename, bts, 0755)
+	if err != nil {
+		return err
+	}
+	return nil
 }
