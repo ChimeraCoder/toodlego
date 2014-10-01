@@ -196,3 +196,18 @@ func (c *ToodleClient) SaveConfig() error {
 	}
 	return nil
 }
+
+func LoadConfig() (*ToodleClient, error) {
+	dir := app.UserConfig()
+	filename := path.Join(dir, "config.json")
+	var client ToodleClient
+	bts, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(bts, &client)
+	if err != nil {
+		return nil, err
+	}
+	return &client, nil
+}
