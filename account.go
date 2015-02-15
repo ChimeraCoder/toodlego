@@ -1,4 +1,4 @@
-package toodledo
+package toodlego
 
 type Account struct {
 	Alias            string `json:"alias"`
